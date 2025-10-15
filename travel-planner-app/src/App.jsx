@@ -1,16 +1,20 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
 import Home from "./Pages/Home";
-import Welcome from "./Pages/Welcome";
 import Trips from "./Pages/Trips";
+import Welcome from "./Pages/Welcome";
 
-export default function App() {
+function App() {
   return (
     <Router>
+      <Navbar />
       <Routes>
-        <Route path="/" element={<Welcome />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/trips" element={<Trips />} />
+        <Route path="/welcome" element={<Welcome />} />
       </Routes>
     </Router>
   );
 }
+
+export default App;
