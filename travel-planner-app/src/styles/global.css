@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global smooth visuals */
+body {
+  background: linear-gradient(to bottom right, #e0f7ff, #f8fcff);
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+  color: #1a1a1a;
+  overflow-x: hidden;
+}
+
+/* Section base layout */
+.page {
+  @apply px-6 sm:px-10 md:px-20 py-16 text-gray-800 max-w-7xl mx-auto;
+}
+
+/* Cards */
+.card {
+  @apply bg-white rounded-2xl shadow-md p-6 sm:p-8 hover:shadow-xl transition duration-300;
+}
+
+/* Buttons */
+.btn {
+  @apply bg-blue-500 text-white py-2 px-6 rounded-xl hover:bg-blue-600 transition-all duration-300;
+}
+
+/* Headings */
+h1, h2, h3 {
+  letter-spacing: 0.5px;
+}
+
+/* Grid tweaks */
+.grid {
+  gap: 2rem;
+}

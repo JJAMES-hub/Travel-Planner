@@ -1,53 +1,98 @@
 import { useEffect, useState } from "react";
 import { getCities } from "../services/opentripmap";
-import { getWeather } from "../services/Weather";
+import { getWeather } from "../services/weather";
+import DestinationCard from "../components/DestinationCard";
 
 export default function Home() {
   const [cities, setCities] = useState([]);
-  const [selectedCity, setSelectedCity] = useState("");
+  const [selected, setSelected] = useState("");
   const [weather, setWeather] = useState(null);
+  const [loadingCities, setLoadingCities] = useState(true);
+  const [loadingWeather, setLoadingWeather] = useState(false);
 
   useEffect(() => {
-    getCities().then(setCities).catch(console.error);
+    async function load() {
+      try {
+        const list = await getCities();
+        setCities(list);
+      } catch (err) {
+        console.error("Failed to load cities:", err);
+      } finally {
+        setLoadingCities(false);
+      }
+    }
+    load();
   }, []);
 
-  async function handleWeather() {
-    if (!selectedCity) return;
-    const data = await getWeather(selectedCity);
-    setWeather(data);
+  async function handleShowWeather() {
+    if (!selected) return;
+    setLoadingWeather(true);
+    try {
+      const w = await getWeather(selected);
+      setWeather(w);
+    } catch (err) {
+      console.error(err);
+      setWeather(null);
+      alert("Weather not found for that city.");
+    } finally {
+      setLoadingWeather(false);
+    }
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 text-gray-800">
-      <h1 className="text-3xl font-bold mb-6"> Explore Cities</h1>
+    <div className="page page-home">
+      <section className="section intro">
+        <h2 className="section-title">Find your next place to visit</h2>
+        <p className="section-sub">Popular destinations hand-picked for you</p>
+      </section>
 
-      <select
-        className="p-3 rounded-md shadow-md mb-4"
-        onChange={(e) => setSelectedCity(e.target.value)}
-      >
-        <option value="">Select a city</option>
-        {cities.map((city) => (
-          <option key={city.id} value={city.name}>
-            {city.name}
-          </option>
-        ))}
-      </select>
+      <section className="section cards">
+        {loadingCities ? (
+          <div className="loader">Loading cities...</div>
+        ) : (
+          <div className="cards-grid">
+            {cities.map((c, i) => (
+              <DestinationCard
+                key={i}
+                title={c.name}
+                subtitle={c.country}
+                img={c.image}
+                href={c.link}
+              />
+            ))}
+          </div>
+        )}
+      </section>
 
-      <button
-        onClick={handleWeather}
-        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-      >
-        Get Weather
-      </button>
-
-      {weather && (
-        <div className="mt-6 p-4 bg-white rounded-xl shadow-md">
-          <h2 className="text-xl font-semibold">{weather.name}</h2>
-          <p>{weather.main.temp}°C</p>
-          <p> {weather.wind.speed} m/s</p>
-          <p>{weather.weather[0].description}</p>
+      <section className="section weather">
+        <div className="weather-control">
+          <select
+            value={selected}
+            onChange={(e) => setSelected(e.target.value)}
+            className="select"
+          >
+            <option value="">Select a city to check weather</option>
+            {cities.map((c, i) => (
+              <option key={i} value={c.name}>
+                {c.name}, {c.country}
+              </option>
+            ))}
+          </select>
+          <button className="btn btn-primary" onClick={handleShowWeather}>
+            {loadingWeather ? "Checking..." : "Show Weather"}
+          </button>
         </div>
-      )}
+
+        {weather && (
+          <div className="weather-card">
+            <h3>
+              {weather.name}, {weather.sys?.country}
+            </h3>
+            <p className="temp">{Math.round(weather.main.temp)}°C</p>
+            <p className="desc">{weather.weather[0].description}</p>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

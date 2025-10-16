@@ -1,13 +1,22 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Navbar() {
+  const loc = useLocation();
   return (
-    <nav className="bg-indigo-700 text-white px-8 py-4 shadow-md flex justify-between items-center">
-      <h1 className="text-xl font-bold">Guardian Travel</h1>
-      <div className="flex gap-5">
-        <Link to="/" className="hover:text-gray-200">Home</Link>
-        <Link to="/trips" className="hover:text-gray-200">Trips</Link>
-        <Link to="/weather" className="hover:text-gray-200">Weather</Link>
+    <nav className="nav">
+      <div className="nav-inner">
+        <div className="brand">Guardian</div>
+        <ul className="nav-links">
+          <li className={loc.pathname === "/home" ? "active" : ""}>
+            <Link to="/home">Home</Link>
+          </li>
+          <li className={loc.pathname === "/trips" ? "active" : ""}>
+            <Link to="/trips">Explore</Link>
+          </li>
+          <li className={loc.pathname === "/" ? "active" : ""}>
+            <Link to="/">Welcome</Link>
+          </li>
+        </ul>
       </div>
     </nav>
   );
